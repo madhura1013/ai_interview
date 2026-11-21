@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Interview</title>
+<style>
+:root{--bg:#0d0a0f;--panel:#16121a;--line:#2a2431;--text:#ece9f2;--mute:#968fa5;--a:#7b86e8;--b:#a88bf0;--warn:#e9a93b}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+aside{width:230px;padding:20px 14px;border-right:1px solid var(--line);flex-shrink:0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;margin-bottom:26px}
+.logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--a),var(--b))}
+.side-h{font-size:12px;color:var(--mute);margin:0 8px 10px}
+.topic{display:block;width:100%;text-align:left;background:none;border:0;color:var(--text);padding:12px;border-radius:10px;font-size:14px;cursor:pointer;margin-bottom:4px}
+.topic:hover:not(:disabled){background:var(--panel)}
+.topic.on{background:linear-gradient(90deg,#5b63c9,#7a68d6)}
+.topic:disabled{opacity:.45;cursor:not-allowed}
+main{flex:1;padding:28px 24px;display:flex;flex-direction:column;align-items:center;position:relative;min-width:0}
+h1{margin:0;font-size:clamp(28px,5vw,40px);background:linear-gradient(90deg,var(--a),#e0b4ff);-webkit-background-clip:text;background-clip:text;color:transparent;text-align:center}
+.sub{color:var(--mute);margin:8px 0 22px;font-size:14px;text-align:center}
+.chip{align-self:flex-start;background:#5b63c9;border-radius:20px;padding:6px 16px;font-size:13px;margin-bottom:10px}
+.counter{position:absolute;top:28px;right:24px;border:2px solid var(--warn);padding:10px 14px;font-size:13px;display:none}
+.avatar{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b));display:grid;place-items:center;font-size:42px;font-weight:600;overflow:hidden;border:3px solid #fff2;transition:box-shadow .2s}
+.avatar.speaking{box-shadow:0 0 0 6px #7b86e855,0 0 0 12px #7b86e822}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.name{margin:10px 0 14px;font-weight:600}
+button.primary{background:linear-gradient(90deg,var(--a),var(--b));border:0;color:#fff;font-weight:600;padding:11px 28px;border-radius:24px;cursor:pointer;font-size:15px}
+button.primary:disabled{opacity:.5;cursor:wait}
+button.ghost{background:none;border:1px solid var(--line);color:var(--mute);padding:8px 18px;border-radius:18px;cursor:pointer;margin-top:12px}
+button.ghost:hover{color:var(--text);border-color:var(--mute)}
+button.mic{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:9px 18px;border-radius:20px;cursor:pointer;font-size:14px}
+button.mic.on{background:#c0392b;border-color:#c0392b}
+.status{font-size:12px;margin-top:10px;color:var(--mute)}
+.status.ok{color:#6fd08c}.status.bad{color:#ff8a8a}
+.stage{width:100%;max-width:680px;margin-top:18px}
+.bubble{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;line-height:1.55}
+textarea{width:100%;min-height:110px;margin-top:12px;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit;resize:vertical}
+textarea:focus-visible,button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.auto{font-size:13px;color:var(--mute);display:flex;gap:6px;align-items:center;margin-left:auto}
+.err{color:#ff8a8a;font-size:13px;margin-top:8px}
+.state{font-size:13px;color:var(--mute);margin-top:8px;min-height:18px}
+.fb h2{margin:0 0 6px}.fb h3{margin:20px 0 8px;font-size:15px;color:var(--b)}
+.fb ul{margin:0;padding-left:20px;line-height:1.6}
+.score{font-size:34px;font-weight:700;color:var(--a)}
+.qa{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+.qa p{margin:4px 0}.qa .q{font-weight:600}.qa .m{color:var(--mute)}
+.hide{display:none!important}
+@media(max-width:720px){body{flex-direction:column}aside{width:100%;border-right:0;border-bottom:1px solid var(--line)}
+.topics{display:flex;flex-wrap:wrap;gap:4px}.topic{width:auto}.counter{position:static;align-self:flex-end;margin-bottom:10px}}
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand"><div class="logo"></div>AI Interview</div>
+  <p class="side-h">Select topic</p>
+  <div class="topics" id="topics"></div>
+</aside>
+<main>
+  <div class="counter" id="counter">Question 1/5</div>
+  <h1>Master Your Interview</h1>
+  <p class="sub">Ace your technical interviews with AI-powered practice and feedback</p>
+  <div class="chip" id="chip">Self Introduction</div>
+
+  <div class="avatar" id="avatar"><img src="avatar.jpg" alt="" onerror="this.remove();document.getElementById('avatar').textContent='P'"></div>
+  <div class="name" id="iname">Pranathi</div>
+
+  <button class="primary" id="startBtn">Start Interview</button>
+  <div class="status" id="status">Checking backend…</div>
+  <button class="ghost hide" id="endBtn">End Interview</button>
+
+  <section class="stage hide" id="chat">
+    <div class="bubble" id="question" aria-live="polite"></div>
+    <div class="state" id="state"></div>
+    <textarea id="answer" placeholder="Speak, or type your answer here…"></textarea>
+    <div class="row">
+      <button class="mic" id="micBtn">Speak answer</button>
+      <button class="mic" id="replayBtn">Replay question</button>
+      <button class="primary" id="sendBtn">Send answer</button>
+      <label class="auto"><input type="checkbox" id="autoMode" checked> Hands-free voice mode</label>
+    </div>
+    <div class="err" id="err"></div>
+  </section>
+
+  <section class="stage hide" id="feedback"></section>
+</main>
+
+<script>
+const TOPICS=["Self Introduction","Generative AI","Python","English","HTML","CSS"];
+const $=id=>document.getElementById(id);
+let topic="HTML",sid=null,busy=false,rec=null,listening=false,currentQ="";
+
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const canSpeak="speechSynthesis" in window;
+
+/* ---------- topics ---------- */
+const tw=$("topics");
+TOPICS.forEach(t=>{const b=document.createElement("button");b.className="topic"+(t===topic?" on":"");b.textContent=t;
+  b.onclick=()=>{topic=t;$("chip").textContent=t;[...tw.children].forEach(c=>c.classList.toggle("on",c===b))};tw.appendChild(b)});
+$("chip").textContent=topic;
+const lockTopics=v=>[...tw.children].forEach(b=>b.disabled=v);
+
+function setBusy(v){busy=v;$("startBtn").disabled=v;$("sendBtn").disabled=v;$("endBtn").disabled=v}
+function showErr(m){$("err").textContent=m||""}
+function setState(m){$("state").textContent=m||""}
+
+/* ---------- voice out (interviewer speaks) ---------- */
+function pickVoice(){
+  const v=speechSynthesis.getVoices();
+  return v.find(x=>/Heera|Zira|Female|Samantha/i.test(x.name)&&/en/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}
+function speak(text,then){
+  if(!canSpeak){then&&then();return}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);const v=pickVoice();if(v)u.voice=v;u.lang=(v&&v.lang)||"en-IN";u.rate=1;
+  u.onstart=()=>{$("avatar").classList.add("speaking");setState("Pranathi is speaking…")};
+  const done=()=>{$("avatar").classList.remove("speaking");setState("");then&&then()};
+  u.onend=done;u.onerror=done;speechSynthesis.speak(u)}
+
+/* ---------- voice in (you speak, text appears) ---------- */
+function updateMic(){const b=$("micBtn");b.classList.toggle("on",listening);b.textContent=listening?"Stop listening":"Speak answer"}
+function stopVoice(){
+  if(canSpeak)speechSynthesis.cancel();
+  $("avatar").classList.remove("speaking");
+  if(rec){rec.onend=null;rec.onerror=null;try{rec.abort()}catch(e){}rec=null}
+  listening=false;updateMic();setState("")}
+
+function startListen(){
+  if(!SR){showErr("Voice input needs Chrome or Edge. You can still type your answer.");return}
+  if(!sid||busy)return;
+  if(canSpeak)speechSynthesis.cancel();
+  showErr("");
+  const base=$("answer").value.trim()?$("answer").value.trim()+" ":"";
+  let finalText="";
+  rec=new SR();rec.lang="en-IN";rec.interimResults=true;rec.continuous=false;
+  rec.onresult=e=>{let interim="";
+    for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;
+      if(e.results[i].isFinal)finalText+=t+" ";else interim+=t}
+    $("answer").value=base+finalText+interim};
+  rec.onerror=e=>{listening=false;updateMic();setState("");
+    if(e.error==="not-allowed"||e.error==="service-not-allowed")showErr("Microphone is blocked. Click the lock icon in the address bar and allow the microphone.");
+    else if(e.error==="no-speech")setState("I didn't hear anything. Press Speak answer to try again.");
+    else if(e.error!=="aborted")showErr("Mic error: "+e.error)};
+  rec.onend=()=>{listening=false;updateMic();rec=null;setState("");
+    $("answer").value=$("answer").value.trim();
+    if($("autoMode").checked&&$("answer").value&&sid&&!busy)$("sendBtn").click()};
+  try{rec.start();listening=true;updateMic();setState("Listening… speak your answer")}catch(e){}}
+
+$("micBtn").onclick=()=>{if(listening){if(rec)rec.stop()}else startListen()};
+$("replayBtn").onclick=()=>{stopVoice();speak(currentQ)};
+
+/* ---------- api ---------- */
+async function api(path,body){
+  const r=await fetch("/api/"+path,{method:body?"POST":"GET",headers:{"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
+  const d=await r.json();if(!r.ok)throw new Error(d.error||"Request failed");return d}
+
+async function checkBackend(){
+  const s=$("status");
+  try{const h=await api("health");
+    if(h.llm){s.textContent="Backend connected";s.className="status ok"}
+    else{s.textContent="Backend running, but GEMINI_API_KEY is missing";s.className="status bad"}
+    $("iname").textContent=h.interviewer}
+  catch{s.textContent="Backend not connected";s.className="status bad"}}
+
+function showQuestion(d){
+  currentQ=d.question;
+  $("question").textContent=d.question;$("answer").value="";
+  $("counter").style.display="block";$("counter").textContent=`Question ${d.number}/${d.total}`;
+  speak(d.question,()=>{if($("autoMode").checked)startListen()})}
+
+/* ---------- buttons ---------- */
+$("startBtn").onclick=async()=>{
+  if(busy)return;setBusy(true);showErr("");$("feedback").classList.add("hide");setState("Preparing your first question…");
+  try{const d=await api("start",{topic});sid=d.session_id;
+    $("chat").classList.remove("hide");$("endBtn").classList.remove("hide");
+    $("startBtn").classList.add("hide");lockTopics(true);showQuestion(d)}
+  catch(e){setState("");$("status").textContent=e.message;$("status").className="status bad"}
+  setBusy(false)};
+
+$("sendBtn").onclick=async()=>{
+  if(busy)return;const a=$("answer").value.trim();if(!a){showErr("Speak or type an answer first.");return}
+  stopVoice();setBusy(true);showErr("");setState("Thinking…");
+  try{const d=await api("answer",{session_id:sid,answer:a});
+    d.done?showFeedback(d.feedback):showQuestion(d)}
+  catch(e){setState("");showErr(e.message)}
+  setBusy(false)};
+
+$("endBtn").onclick=async()=>{
+  if(busy||!sid)return;stopVoice();setBusy(true);showErr("");setState("Preparing your feedback…");
+  try{const d=await api("end",{session_id:sid});showFeedback(d.feedback)}
+  catch(e){setState("");showErr(e.message)}
+  setBusy(false)};
+
+/* ---------- feedback ---------- */
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
+function list(title,items){if(!items||!items.length)return null;const w=el("div");w.append(el("h3","",title));
+  const u=el("ul");items.forEach(i=>u.append(el("li","",i)));w.append(u);return w}
+
+function showFeedback(f){
+  stopVoice();sid=null;setState("");
+  $("chat").classList.add("hide");$("endBtn").classList.add("hide");$("counter").style.display="none";
+  const box=$("feedback");box.innerHTML="";box.classList.remove("hide");
+  const c=el("div","bubble fb");
+  c.append(el("h2","","Your feedback"),el("div","score",`${f.score}/10`),el("p","",f.summary));
+  [list("What went well",f.strengths),list("What to correct",f.improvements)].forEach(x=>x&&c.append(x));
+  if(f.per_question&&f.per_question.length){c.append(el("h3","","Question by question"));
+    f.per_question.forEach(p=>{const q=el("div","qa");
+      q.append(el("p","q",p.question),el("p","m",p.comment),el("p","","Better answer: "+p.better_answer));c.append(q)})}
+  const again=el("button","primary","Start new interview");again.style.marginTop="18px";
+  again.onclick=()=>{stopVoice();box.classList.add("hide");$("startBtn").classList.remove("hide");lockTopics(false)};
+  c.append(again);box.append(c);box.scrollIntoView({behavior:"smooth"});
+  let spoken=`You scored ${f.score} out of 10. ${f.summary}`;
+  if(f.improvements&&f.improvements.length)spoken+=" Things to correct: "+f.improvements.join(". ");
+  speak(spoken)}
+
+if(canSpeak)speechSynthesis.getVoices();
+checkBackend();
+</script>
+</body>
+</html>
